@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 import ru.ilyin.userservice.dao.UserDao;
 import ru.ilyin.userservice.dao.UserDaoImpl;
 import ru.ilyin.userservice.entity.User;
+import ru.ilyin.userservice.service.UserService;
+import ru.ilyin.userservice.service.UserServiceImpl;
 import ru.ilyin.userservice.util.HibernateUtil;
 
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.Scanner;
 
 public class Main {
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
-    private static final UserDao USER_DAO = new UserDaoImpl();
+    private static final UserService USER_SERVICE = new UserServiceImpl(new UserDaoImpl());
     private static final Scanner SCANNER = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -81,7 +83,7 @@ public class Main {
         int age = Integer.parseInt(SCANNER.nextLine());
 
         User user = new User(name, email, age);
-        User savedUser = USER_DAO.save(user);
+        User savedUser = USER_SERVICE.save(user);
         System.out.println("User created successfully: " + savedUser);
         LOGGER.info("Created user: {}", savedUser);
 
@@ -91,7 +93,7 @@ public class Main {
         System.out.println("\nEnter user ID: ");
         Long id = Long.parseLong(SCANNER.nextLine());
 
-        User user = USER_DAO.findById(id);
+        User user = USER_SERVICE.findById(id);
         if (user != null) {
             System.out.println("User found: " + user);
             LOGGER.info("Found user by id {}: {}", id, user);
@@ -102,7 +104,7 @@ public class Main {
     }
 
     private static void findAllUsers(){
-        List<User> users = USER_DAO.findAll();
+        List<User> users = USER_SERVICE.findAll();
         if (users.isEmpty()) {
             System.out.println("No users found.");
             LOGGER.info("No users found in database");
@@ -117,7 +119,7 @@ public class Main {
         System.out.print("\nEnter user ID to update: ");
         Long id = Long.parseLong(SCANNER.nextLine());
 
-        User user = USER_DAO.findById(id);
+        User user = USER_SERVICE.findById(id);
         if (user == null) {
             System.out.println("User not found with ID: " + id);
             LOGGER.warn("Attempt to update non-existent user with id: {}", id);
@@ -142,7 +144,7 @@ public class Main {
             user.setAge(Integer.parseInt(ageInput));
         }
 
-        User updatedUser = USER_DAO.update(user);
+        User updatedUser = USER_SERVICE.update(user);
         System.out.println("User updated successfully: " + updatedUser);
         LOGGER.info("Updated user: {}", updatedUser);
     }
@@ -152,13 +154,13 @@ public class Main {
         System.out.print("\nEnter user ID to delete: ");
         Long id = Long.parseLong(SCANNER.nextLine());
 
-        User user = USER_DAO.findById(id);
+        User user = USER_SERVICE.findById(id);
         if (user == null) {
             System.out.println("User not found with ID: " + id);
             LOGGER.warn("Attempt to delete non-existent user with id: {}", id);
             return;
         }
-        USER_DAO.delete(id);
+        USER_SERVICE.delete(id);
         System.out.println("User deleted successfully with ID: " + id);
         LOGGER.info("Deleted user with id: {}", id);
     }
