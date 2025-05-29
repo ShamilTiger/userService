@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.ilyin.userservice.dao.UserDao;
+import ru.ilyin.userservice.dao.UserDaoImpl;
 import ru.ilyin.userservice.entity.User;
 
 import java.util.List;
@@ -21,10 +22,10 @@ public class UserServiceUnitTest {
     
 
     @Mock
-    private UserDao userDao;
+    private UserDaoImpl userDao;
 
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userService;
 
     private User user;
 
@@ -48,8 +49,8 @@ public class UserServiceUnitTest {
     void testGetUserById_IfNotExist(){
         when(userDao.findById(999L)).thenReturn(null);
 
-        User result = userService.findById(1L);
-        assertNull(null, result.getName());
+        User result = userService.findById(999L);
+        assertNull(result);
 
     }
 
@@ -59,6 +60,7 @@ public class UserServiceUnitTest {
 
         User result = userService.save(user);
         assertEquals("Alex",result.getName());
+        verify(userDao).save(any(User.class));
     }
 
 //    @Test
@@ -77,22 +79,23 @@ public class UserServiceUnitTest {
         );
         when(userDao.findAll()).thenReturn(users);
 
-        assertEquals(2,users.size());
+        List<User> actualUsers = userService.findAll();
 
+        assertEquals(2,actualUsers.size());
+        assertEquals(users,actualUsers);
     }
 
     @Test
     void updateUserValidDataShouldUpdate(){
         User user1 = new User("Alex11", "alex11@mail.ru" , 26);
-        when(userDao.findById(1L)).thenReturn(user);
+//        when(userDao.findById(1L)).thenReturn(user);
 
         userService.update(user1);
 
         verify(userDao).update(argThat(user ->
-                user.getName().equals("Alex11") &&
-                user.getAge() == 26
+                user1.getName().equals("Alex11") &&
+                user1.getAge() == 26
         ));
-
 
     }
 

@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 
 import org.mockito.Mock;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.ilyin.userservice.entity.User;
 import ru.ilyin.userservice.util.HibernateUtil;
@@ -14,12 +16,19 @@ import ru.ilyin.userservice.util.HibernateUtil;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.ilyin.userservice.TestContainersConfig.postgreSQLContainer;
+
 
 
 @Testcontainers
 public class UserDaoIntegrationTest {
-    private static UserDao userDao;
+
+    @Container
+    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:15-alpine")
+            .withDatabaseName("test_db")
+            .withUsername("test")
+            .withPassword("test");
+
+    private static UserDaoImpl userDao;
 
     @BeforeAll
     static void beforeAll(){
@@ -57,5 +66,36 @@ public class UserDaoIntegrationTest {
         assertEquals("John",foundUser.getName());
     }
 
+    @Test
+    void testfindAll(){
+        userDao.save(new User("Alex", "alex@example.com", 20));
+        userDao.save(new User("Bob", "bob@example.com", 30));
+
+        List<User> users = userDao.findAll();
+        assertEquals(2, users.size());
+    }
+
+    @Test
+    void testUpdate(){
+        User user = userDao.save(new User("Charlie", "charlie@example.com", 40));
+        user.setName("Charles");
+        user.setAge(41);
+
+        User user1 = userDao.update(user);
+        assertEquals("Charles", user1.getName());
+        assertEquals(41, user1.getAge());
+    }
+
+    @Test
+    void testDelete(){
+        User user = userDao.save(new User("Dave", "dave@example.com", 30));
+        userDao.delete(user.getId());
+
+
+        User deletedUser = userDao.findById(user.getId());
+        assertNull(deletedUser);
+
+
+    }
 
 }
