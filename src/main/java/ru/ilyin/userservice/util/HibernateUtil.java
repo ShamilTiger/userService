@@ -20,8 +20,13 @@ public class HibernateUtil {
             try {
                 Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
 
+                String config = System.getProperty("test.config") != null
+                        ? "test-hibernate.cfg.xml"
+                        : "hibernate.cfg.xml";
+
                 registry =new StandardServiceRegistryBuilder()
-                        .configure()
+                        .configure(config)
+                        .applySettings(System.getProperties())
                         .build();
                 MetadataSources sources = new MetadataSources(registry);
 

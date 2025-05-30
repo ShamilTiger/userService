@@ -44,7 +44,7 @@ public class UserDaoIntegrationTest {
     void setUp(){
         try (var session = HibernateUtil.getSessionFactory().openSession()){
             var transaction = session.beginTransaction();
-            session.createNativeQuery("Delete from User").executeUpdate();
+            session.createNativeQuery("TRUNCATE TABLE users").executeUpdate();
             transaction.commit();
         }
     }
