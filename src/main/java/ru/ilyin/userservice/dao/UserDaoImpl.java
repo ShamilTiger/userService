@@ -1,10 +1,9 @@
 package ru.ilyin.userservice.dao;
 
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import ru.ilyin.userservice.entity.User;
+import ru.ilyin.userservice.model.User;
 import ru.ilyin.userservice.util.HibernateUtil;
 
 import java.util.List;

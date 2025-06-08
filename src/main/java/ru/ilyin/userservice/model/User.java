@@ -1,4 +1,4 @@
-package ru.ilyin.userservice.entity;
+package ru.ilyin.userservice.model;
 
 
 
@@ -8,14 +8,17 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-
+@Data
 @Getter
 @ToString
 @EqualsAndHashCode
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "users")
 public class User {
 
@@ -31,15 +34,15 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public User() {
-    }
-
-    public User(String name, String email, int age) {
-        this.name = name;
-        this.email = email;
-        this.age = age;
-        this.createdAt = LocalDateTime.now();
-    }
+//    public User() {
+//    }
+//
+//    public User(String name, String email, int age) {
+//        this.name = name;
+//        this.email = email;
+//        this.age = age;
+//        this.createdAt = LocalDateTime.now();
+//    }
 
     public void setAge(@Min(value = 1, message = "Age must be at least 1") @Max(value = 120, message = "Age must be less than 120") int age) {
         this.age = age;

@@ -1,6 +1,6 @@
 package ru.ilyin.userservice.dao;
 
-import ru.ilyin.userservice.entity.User;
+import ru.ilyin.userservice.model.User;
 
 import java.util.List;
 
