@@ -1,8 +1,11 @@
 package ru.ilyin.userservice.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.ilyin.userservice.dto.EventType;
+import ru.ilyin.userservice.dto.UserEvent;
 import ru.ilyin.userservice.dto.UserRequestDto;
 import ru.ilyin.userservice.dto.UserResponseDto;
 import ru.ilyin.userservice.model.User;
@@ -20,6 +23,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final KafkaTemplate<String, UserEvent> kafkaTemplate;
 
     @Override
     @Transactional
@@ -29,6 +33,9 @@ public class UserServiceImpl implements UserService{
         }
         User user = userMapper.toEntity(userRequestDto);
         User savedUser = userRepository.save(user);
+
+        kafkaTemplate.send("user-events", new UserEvent(EventType.CREATED, savedUser.getEmail()));
+
         return userMapper.toDto(savedUser);
     }
 
@@ -67,11 +74,12 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void deleteUser(Long id) {
-        if(!userRepository.existsById(id)){
-            throw new ResourceNotFoundException("User not found with id: " + id);
-        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->new ResourceNotFoundException("User not found"));
+
         userRepository.deleteById(id);
 
+        kafkaTemplate.send("user-events", new UserEvent(EventType.DELETED, user.getEmail()));
     }
 
 
