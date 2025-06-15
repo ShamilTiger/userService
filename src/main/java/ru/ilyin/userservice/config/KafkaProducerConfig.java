@@ -15,6 +15,7 @@ import ru.ilyin.userservice.dto.UserEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @Configuration
 public class KafkaProducerConfig {
 
