@@ -1,6 +1,9 @@
 package ru.ilyin.userservice.controller;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,35 +18,41 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "User Management", description = "APIs for managing users")
 public class UserController {
 
     private final UserService userService;
 
+    @Operation(summary = "Create a new user")
+    @ApiResponse(responseCode = "201", description = "User created successfully")
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser (@Valid @RequestBody UserRequestDto userRequestDto){
         UserResponseDto createdUser = userService.createUser(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
+    @Operation(summary = "Get user by ID")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id){
         UserResponseDto user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
 
-
+    @Operation(summary = "Get all users")
     @GetMapping
     public ResponseEntity<List<UserResponseDto>> getAllUsers(){
         List<UserResponseDto> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
+    @Operation(summary = "Update user by ID")
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDto userRequestDto){
         UserResponseDto updatedUser = userService.updateUser(id, userRequestDto);
         return ResponseEntity.ok(updatedUser);
     }
 
+    @Operation(summary = "Delete user by ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser (@PathVariable Long id){
         userService.deleteUser(id);
