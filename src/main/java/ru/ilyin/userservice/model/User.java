@@ -34,6 +34,9 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    public User(Long id, String fallbackUser, String mail) {
+    }
+
 //    public User() {
 //    }
 //

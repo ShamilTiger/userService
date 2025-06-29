@@ -1,6 +1,7 @@
 package ru.ilyin.userservice.controller;
 
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.ilyin.userservice.dto.UserRequestDto;
 import ru.ilyin.userservice.dto.UserResponseDto;
+import ru.ilyin.userservice.model.User;
 import ru.ilyin.userservice.service.UserService;
 
 import java.util.List;
@@ -33,6 +35,7 @@ public class UserController {
 
     @Operation(summary = "Get user by ID")
     @GetMapping("/{id}")
+    @CircuitBreaker(name = "userService", fallbackMethod = "fallbackGetUser")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id){
         UserResponseDto user = userService.getUserById(id);
         return ResponseEntity.ok(user);
@@ -57,5 +60,9 @@ public class UserController {
     public ResponseEntity<Void> deleteUser (@PathVariable Long id){
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    public User fallbackGetUser(Long id, Exception ex) {
+        return new User(id, "Fallback User", "fallback@mail.ru");
     }
 }
